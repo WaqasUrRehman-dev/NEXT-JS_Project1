@@ -5,7 +5,7 @@ import { compare } from "bcrypt";
 import MongooseAdapter from "@/adapter/index";
 import dbConnection from "@/adapter/dbConnect";
 import User from "@/adapter/models/user";
-
+import EmailProvider from "next-auth/providers/email"
 const DBAdapter = MongooseAdapter(dbConnection)
 const handler = NextAuth({
   adapter: DBAdapter,
@@ -13,6 +13,17 @@ const handler = NextAuth({
     strategy: "jwt",
   },
   providers: [
+    EmailProvider({
+      server: {
+        host: process.env.EMAIL_SERVER_HOST,
+        port: process.env.EMAIL_SERVER_PORT,
+        auth: {
+          user: process.env.EMAIL_SERVER_USER,
+          pass: process.env.EMAIL_SERVER_PASSWORD
+        }
+      },
+      from: process.env.EMAIL_FROM
+    }),
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOOGLE_SECRET_KEY,

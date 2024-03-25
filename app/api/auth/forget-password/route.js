@@ -9,8 +9,6 @@ import bcrypt from "bcrypt";
 export const POST = async (req, res) => {
   const { email } = await req.json();
 
-  console.log(email);
-
   try {
     await dbConnection;
 
@@ -20,7 +18,9 @@ export const POST = async (req, res) => {
       return new Response(JSON.stringify({ message: "User not found" }), {
         status: 404,
       });
-    } else {
+    } 
+
+    else {
       const token = await Token.findOne({ user: user._id });
 
       if (token) {
@@ -38,25 +38,24 @@ export const POST = async (req, res) => {
       const link = `${process.env.NEXT_PUBLIC_APP_URL}/forget-password/${secureTokenId}`;
       const transport = createTransport(process.env.EMAIL_SERVER);
       // console.log(link);
-      console.log(process.EMAIL_FROM);
+      // console.log(process.env.EMAIL_FROM);
       await transport.sendMail({
-        from: 'rehmanwaqas466@gmail.com',
+        from: process.env.EMAIL_FROM,
         to: user.email,
         subject: "Reset Password",
         text: "Reset Password Messsage",
         html: getPasswordResetTemplate(link, user.name),
       });
-      console.log(user.email)
+      console.log(user.email);
       return new Response(JSON.stringify({ message: "Email Sent" }), {
         status: 200,
       });
-    } 
+    }
   } catch (error) {
     // console.log(error);
-    return new Response(
-      JSON.stringify({ message: error.message }),
-      { status: 500 }
-    );
+    return new Response(JSON.stringify({ message: error.message }), {
+      status: 500,
+    });
   }
 };
 
@@ -67,6 +66,7 @@ export const PATCH = async (req, res) => {
     await dbConnection;
 
     const token = await Token.findOne({ token: tokenId });
+    console.log(token)
 
     if (!token) {
       return new Response(
@@ -91,7 +91,7 @@ export const PATCH = async (req, res) => {
     await transport.sendMail({
       from: process.env.EMAIL_FROM,
       to: user.email,
-      subject: "Password reset successufly",
+      subject: "Password reset Successfully",
       html: "Password is successfuly reset",
     });
 
@@ -104,7 +104,7 @@ export const PATCH = async (req, res) => {
     }
 
     return new Response(
-      JSON.stringify({ message: "Password reset Successfull" }),
+      JSON.stringify({ message: "Password reset Successfully" }),
       { status: 200 }
     );
   } catch (error) {

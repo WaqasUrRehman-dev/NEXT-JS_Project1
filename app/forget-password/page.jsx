@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import toast from "react-hot-toast";
 
+import axios from "axios";
+
 const ForgetPassword = () => {
   const [isLoading, setIsLoading] = useState(false);
 
@@ -15,7 +17,7 @@ const ForgetPassword = () => {
   };
 
   const onSubmit = async (values) => {
-    console.log(values);
+
     setIsLoading(true);
     const res = await fetch("/api/auth/forget-password", {
       method: "POST",

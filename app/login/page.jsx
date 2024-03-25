@@ -6,10 +6,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 
-
 export default function Login() {
-
-  const router = useRouter()
+  const router = useRouter();
   const initialValues = {
     email: "",
     password: "",
@@ -20,13 +18,14 @@ export default function Login() {
       {
         loading: "Signing in...",
         success: (data) => {
-          console.log(data)
+          console.log(data);
           router.push("/");
-          return 'Signed in successfully';
+          return "Signed in successfully";
         },
         error: (err) => {
-          console.log(err);
-          return 'err';
+          console.log(err.message);
+          router.push("/signup")
+          return "Invalid credentials";
         },
       },
       {
@@ -34,6 +33,9 @@ export default function Login() {
         success: {
           duration: 3000,
         },
+        error:{
+          duration: 3000,
+        }
       }
     );
   };
@@ -159,7 +161,33 @@ export default function Login() {
                 </span>
                 Sign in with Google
               </button>
-
+            </div>
+            <p className="text-xl items-center justify-center flex mt-3 font-light">
+              or
+            </p>
+            <div className="flex mt-4">
+              <label htmlFor="emial">Email</label>
+            </div>
+            <div className="mt-2">
+              <input
+                className="flex h-10 w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50"
+                type="email"
+                placeholder="email"
+                id="email"
+                
+              />
+              
+            </div>
+            <div className="flex mt-4">
+              <button
+                type="submit"
+                onClick={()=>{
+                  signIn("email")
+                }}
+                className="inline-flex w-full items-center justify-center rounded-md bg-black px-3.5 py-2.5 font-semibold leading-7 text-white hover:bg-black/80"
+              >
+                Login
+              </button>
             </div>
           </div>
         </div>

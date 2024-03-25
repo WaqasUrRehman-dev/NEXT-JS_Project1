@@ -1,31 +1,36 @@
 "use client";
+
 import { useFormik } from "formik";
-import { useRouter } from "next/navigation";
+import { useRouter } from "next/navigation"; 
 import { useState } from "react";
 import toast from "react-hot-toast";
 
-const Token = () => {
+const Token = ({params}) => {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const initialValues = {
     password: "",
-    confirmPassword: "",
   };
   const onSubmit = async (values) => {
+    console.log(values);
+
     setIsLoading(true);
-    const res = await fetch("api/auth/forget-password", {
+
+    const res = await fetch("/api/auth/forget-password", {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
+        Accept: "application/json",
       },
-      body: JSON.stringify(values),
+      body: JSON.stringify({password:values.password, tokenId:params.token}),
     });
     const data = await res.json();
-    if (data.message === "Password reset Successfully") {
+    console.log(data);
+    if (res.ok && data.message === "Password reset Successfully") {
       toast.success("Password reset Successfully");
       router.push("/");
     } else {
-      toast.error(data.message, {
+      toast.error(data.message || "An error occurred", {
         position: "top-right",
       });
     }
@@ -38,13 +43,16 @@ const Token = () => {
       errors.password = "Required";
     } else if (values.password.length < 8) {
       errors.password = "Password must be greater than 8 characters";
-    }else if(confirmPassword !== password){
-      errors.password = "Password does not match"
     }
     return errors;
   };
 
-  const formik = useFormik(onSubmit, validate, initialValues);
+  const formik = useFormik({
+    initialValues,
+    onSubmit,
+    validate,
+  });
+
   return (
     <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-sm">
@@ -80,34 +88,10 @@ const Token = () => {
                 placeholder="Enter new password"
                 className="block pl-2 w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                 onChange={formik.handleChange}
-                value={formik.values?.password}
+                value={formik.values.password}
               />
               {formik.errors.password && formik.touched.password && (
-                <p className="text-red-700"> {formik.errors.password} </p>
-              )}
-            </div>
-          </div>
-
-          <div>
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium leading-6 text-gray-900"
-            >
-              Confirm Password
-            </label>
-            <div className="mt-2">
-              <input
-                id="password"
-                name="password"
-                disabled={isLoading}
-                type="password"
-                placeholder="Confirm Password"
-                className="block pl-2 w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                onChange={formik.handleChange}
-                value={formik.values.confirmPassword}
-              />
-              {formik.errors.confirmPassword && formik.touched.confirmPassword && (
-                <p className="text-red-700"> {formik.errors.confirmPassword} </p>
+                <p className="text-red-700">{formik.errors.password}</p>
               )}
             </div>
           </div>
